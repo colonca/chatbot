@@ -6,10 +6,10 @@ import NavBar from './parts/navbar';
 function App() {
   return (
     <div className="App">
-       <NavBar/>
-       <ChatBot />
+      <NavBar />
+      <ChatBot />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
