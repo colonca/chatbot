@@ -1,17 +1,17 @@
 .message {
-    @apply flex px-2 py-1 
+  @apply flex px-2 py-1;
 }
 
 .message.own {
-    @apply flex-row-reverse
+  @apply flex-row-reverse;
 }
 
 .message .message__content {
-    @apply bg-gray-100 ml-2 p-2 mb-2 rounded-md;
-    border-top-left-radius: 0;
+  @apply bg-gray-100 ml-2 p-2 mb-1 rounded-md;
+  border-top-left-radius: 0;
 }
 
 .message.own .message__content {
-    @apply bg-blue-50;
-    border-top-right-radius: 0;
+  @apply bg-blue-50;
+  border-top-right-radius: 0;
 }

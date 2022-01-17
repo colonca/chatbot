@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import '../../assets/css/components/chatbot.css';
+import uuid from '../../utils/uuid';
 
 function Message({ own, content }) {
   return (
@@ -24,9 +25,13 @@ function Message({ own, content }) {
         </div>
       )}
       <div className="w-10/12">
-        {content.map((message) => (
-          <div className="message__content">{message}</div>
-        ))}
+        {!own && <div className="ml-2 text-gray-400 text-sm mb-1">Bot</div>}
+        {content &&
+          content.map((message) => (
+            <div key={uuid()} className="message__content">
+              {message}
+            </div>
+          ))}
       </div>
     </div>
   );

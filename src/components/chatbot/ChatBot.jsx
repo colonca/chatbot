@@ -1,8 +1,24 @@
 import React, { useState } from 'react';
+import uuid from '../../utils/uuid';
 import Message from './Message';
 
 function ChatBot() {
   const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([
+    {
+      own: false,
+      content: [
+        'Hola ¡qué bueno verte por aquí! 👋',
+        'Dime, ¿cómo puedo ayudarte hoy?'
+      ]
+    }
+  ]);
+
+  const handleSubmit = () => {
+    if (message) setMessages([...messages, { own: true, content: [message] }]);
+    setMessage('');
+  };
 
   return (
     <div className="fixed bottom-4 right-4">
@@ -44,18 +60,16 @@ function ChatBot() {
             </button>
           </div>
           <div className="h-96 overflow-y-auto py-4">
-            <Message
-              content={[
-                'Hola ¡qué bueno verte por aquí! 👋',
-                'En que te podemos ayudar'
-              ]}
-            />
-            <Message own content={['Buen día 😍']} />
+            {messages &&
+              messages.map((item) => (
+                <Message key={uuid()} own={item.own} content={item.content} />
+              ))}
           </div>
           <div className="relative block border-t-2 rounded-lg border-gray-100">
             <span className="sr-only">Search</span>
             <span className="absolute inset-y-0 right-1 flex items-center pr-2 cursor-pointer">
               <svg
+                onClick={() => handleSubmit()}
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 text-gray-500"
                 fill="none"
@@ -75,6 +89,11 @@ function ChatBot() {
               placeholder="Escribir mensaje"
               type="text"
               name="message"
+              value={message}
+              onKeyPress={(event) => {
+                if (event.code === 'Enter') handleSubmit();
+              }}
+              onChange={(event) => setMessage(event.target.value)}
             />
           </div>
         </div>
