@@ -1,22 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import socket from '../../services/socket';
 import uuid from '../../utils/uuid';
 import Message from './Message';
+import { read, save } from '../../services/localstorage';
 
-function ChatBot() {
+function ChatBot({ isAsesor = false }) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([
-    {
-      own: false,
-      content: [
-        'Hola ¡qué bueno verte por aquí! 👋',
-        'Dime, ¿cómo puedo ayudarte hoy?'
-      ]
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    let key = read('client');
+    if (!key) {
+      key = uuid();
+      save('client', key);
     }
-  ]);
+    if (!isAsesor) {
+      socket.emit('new ticket', {
+        client: read('client'),
+        area: 'soporte'
+      });
+    }
+    if (isAsesor) {
+      socket.emit('new asesor', {
+        id: read('client'),
+        nombre: 'Camilo Colon'
+      });
+    }
+    socket.on('message', (msg) => {
+      if (msg && msg.receptor === read('client'))
+        setMessages([...messages, { own: false, content: [msg.text] }]);
+    });
+  }, [isAsesor, messages]);
 
   const handleSubmit = () => {
     if (message) setMessages([...messages, { own: true, content: [message] }]);
+    socket.emit('message', {
+      client: read('client'),
+      text: message,
+      isAsesor
+    });
     setMessage('');
   };
 

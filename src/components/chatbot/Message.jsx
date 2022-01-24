@@ -25,7 +25,6 @@ function Message({ own, content }) {
         </div>
       )}
       <div className="w-10/12">
-        {!own && <div className="ml-2 text-gray-400 text-sm mb-1">Bot</div>}
         {content &&
           content.map((message) => (
             <div key={uuid()} className="message__content">
