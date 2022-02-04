@@ -1,52 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import socket from '../../services/socket';
-import uuid from '../../utils/uuid';
-import Message from './Message';
-import { read, save } from '../../services/localstorage';
+import React, { useState } from 'react';
 
-function ChatBot({ isAsesor = false }) {
+function Canvas({ title = 'WayitaBot', children }) {
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-
-  useEffect(() => {
-    let key = read('client');
-    if (!key) {
-      key = uuid();
-      save('client', key);
-    }
-    if (!isAsesor) {
-      socket.emit('new ticket', {
-        client: read('client'),
-        area: 'soporte'
-      });
-    }
-    if (isAsesor) {
-      socket.emit('new asesor', {
-        id: read('client'),
-        nombre: 'Camilo Colon'
-      });
-    }
-    socket.on('message', (msg) => {
-      if (msg && msg.receptor === read('client'))
-        setMessages([...messages, { own: false, content: [msg.text] }]);
-    });
-  }, [isAsesor, messages]);
-
-  const handleSubmit = () => {
-    if (message) setMessages([...messages, { own: true, content: [message] }]);
-    socket.emit('message', {
-      client: read('client'),
-      text: message,
-      isAsesor
-    });
-    setMessage('');
-  };
-
   return (
-    <div className="fixed bottom-4 right-4">
+    <div className="fixed bottom-4 right-4 ">
       {open && (
-        <div className="chat m-2 w-96 shadow-md rounded-lg">
+        <div className="chat m-2 w-96 shadow-md rounded-lg bg-white">
           <div className="bg-red-500 rounded-t-lg text-white flex justify-between items-center px-2 py-5">
             <div className="flex">
               <svg
@@ -63,7 +22,7 @@ function ChatBot({ isAsesor = false }) {
                   d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
                 />
               </svg>
-              <div className="ml-2">ChatBot</div>
+              <div className="ml-2">{title}</div>
             </div>
             <button type="button" onClick={() => setOpen(false)}>
               <svg
@@ -82,43 +41,7 @@ function ChatBot({ isAsesor = false }) {
               </svg>
             </button>
           </div>
-          <div className="h-96 overflow-y-auto py-4">
-            {messages &&
-              messages.map((item) => (
-                <Message key={uuid()} own={item.own} content={item.content} />
-              ))}
-          </div>
-          <div className="relative block border-t-2 rounded-lg border-gray-100">
-            <span className="sr-only">Search</span>
-            <span className="absolute inset-y-0 right-1 flex items-center pr-2 cursor-pointer">
-              <svg
-                onClick={() => handleSubmit()}
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"
-                />
-              </svg>
-            </span>
-            <input
-              className="placeholder:italic placeholder:text-gray-400 block bg-white w-full py-4 pl-2 pr-3 focus:outline-none focus:border-gray-50 focus:ring-gray-50 focus:ring-1 sm:text-sm"
-              placeholder="Escribir mensaje"
-              type="text"
-              name="message"
-              value={message}
-              onKeyPress={(event) => {
-                if (event.code === 'Enter') handleSubmit();
-              }}
-              onChange={(event) => setMessage(event.target.value)}
-            />
-          </div>
+          {children}
         </div>
       )}
       {!open && (
@@ -150,4 +73,4 @@ function ChatBot({ isAsesor = false }) {
   );
 }
 
-export default ChatBot;
+export default Canvas;

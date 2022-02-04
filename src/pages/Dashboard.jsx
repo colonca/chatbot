@@ -2,9 +2,12 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Sidebar from '../parts/Sidebar';
 import Navbar from '../parts/Navbar';
-import ChatBot from '../components/chatbot/ChatBot';
+import useLoadUser from '../hooks/useLoadUser';
+import Canvas from '../components/chats/Canvas';
+import ChatAsesor from '../components/chats/ChatAsesor';
 
 function Dashboard() {
+  useLoadUser();
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-1 overflow-y-hidden">
@@ -18,7 +21,9 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <ChatBot isAsesor />
+      <Canvas title="Camilo Colón">
+        <ChatAsesor />
+      </Canvas>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import '../../assets/css/components/chatbot.css';
-import uuid from '../../utils/uuid';
+import '../assets/css/components/chatbot.css';
+import uuid from '../utils/uuid';
 
 function Message({ own, content }) {
   return (
