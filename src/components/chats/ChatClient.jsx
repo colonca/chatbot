@@ -3,43 +3,58 @@ import socket from '../../services/socket';
 import Message from '../Message';
 import uuid from '../../utils/uuid';
 import useLocalStorageClient from '../../hooks/useLocalStorageClient';
-import { read, save } from '../../services/localstorage';
+import TicketServices from '../../services/TicketService';
 
 function ChatClient() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [position, setPositon] = useState(0);
 
   const { key } = useLocalStorageClient();
 
   useEffect(() => {
-    const data = read('MESSAGES-CLIENT');
-    if (data) setMessages(data);
-  }, []);
-
-  useEffect(() => {
-    save('MESSAGES-CLIENT', messages);
-  }, [messages]);
+    async function fetch() {
+      if (key) {
+        const resp = await TicketServices.getTicketClient(key);
+        if (resp.status === 200) {
+          setMessages(
+            resp.result.messages.map((item) => ({
+              own: item.emisor === key,
+              content: [item.text]
+            }))
+          );
+        }
+      }
+    }
+    fetch();
+  }, [key]);
 
   useEffect(() => {
     if (key) {
-      socket.emit('ticket', {
+      socket.emit('TICKET', {
         client: key,
-        area: 'soporte'
+        area: 'SOPORTE'
       });
-      socket.on('message', (value) => {
+      socket.on('MESSAGE', (value) => {
+        console.log(value);
         if (value.receptor === key) {
           setMessages([...messages, { own: false, content: [value.text] }]);
+        }
+      });
+      socket.on('QUEUE', (value) => {
+        if (value.receptor === key) {
+          setPositon(value.position);
         }
       });
     }
   }, [key, messages]);
 
   const handlesubmit = () => {
-    if (message) {
+    if (message && position === 0) {
       setMessages([...messages, { own: true, content: [message] }]);
-      socket.emit('message', {
+      socket.emit('MESSAGE', {
         emisor: key,
-        type: 'cliente',
+        type: 'CLIENTE',
         text: message
       });
     }
@@ -49,6 +64,15 @@ function ChatClient() {
   return (
     <div>
       <div className="h-96 overflow-y-auto py-4">
+        {position !== 0 && messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center my-2 text-sm w-full">
+            <p className="w-4/5 text-center">
+              🤖 Nuestos asesores se encuentran ocupados , en unos minutos te
+              contactare con uno 🤳.
+            </p>
+            <p className="mt-2">Posición en la cola : {position} 🚶</p>
+          </div>
+        )}
         {messages &&
           messages.map((item) => (
             <Message key={uuid()} own={item.own} content={item.content} />
@@ -81,6 +105,7 @@ function ChatClient() {
           type="text"
           value={message}
           name="message"
+          disabled={position !== 0}
           onKeyPress={(event) => {
             if (event.code === 'Enter') handlesubmit();
           }}

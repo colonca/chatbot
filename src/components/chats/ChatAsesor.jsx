@@ -3,7 +3,7 @@ import { shallowEqual, useSelector } from 'react-redux';
 import socket from '../../services/socket';
 import Message from '../Message';
 import uuid from '../../utils/uuid';
-import { read, save } from '../../services/localstorage';
+import TicketServices from '../../services/TicketService';
 
 function ChatAsesor() {
   const [message, setMessage] = useState('');
@@ -11,34 +11,46 @@ function ChatAsesor() {
   const user = useSelector((state) => state.user, shallowEqual);
 
   useEffect(() => {
-    const data = read('MESSAGES-ASESOR');
-    if (data) setMessages(data);
-  }, []);
-
-  useEffect(() => {
-    save('MESSAGES-ASESOR', messages);
-  }, [messages]);
-
-  useEffect(() => {
-    socket.emit('asesor', {
-      id: user.id,
-      name: user.name
-    });
-    socket.on('message', (value) => {
-      if (value.receptor === user.id) {
-        setMessages([...messages, { own: false, content: [value.text] }]);
+    async function fetch() {
+      if (user) {
+        const resp = await TicketServices.getTicketAsesor(user.id);
+        if (resp.status === 200) {
+          setMessages(
+            resp.result.messages.map((item) => ({
+              own: item.emisor === user.id,
+              content: [item.text]
+            }))
+          );
+        }
       }
-    });
+    }
+    fetch();
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      socket.emit('ASESOR', {
+        id: user.id,
+        name: user.name
+      });
+      socket.on('MESSAGE', (value) => {
+        if (value.receptor === user.id) {
+          setMessages([...messages, { own: false, content: [value.text] }]);
+        }
+      });
+    }
   }, [messages, user]);
 
   const submit = () => {
     if (message) {
       setMessages([...messages, { own: true, content: [message] }]);
-      socket.emit('message', {
-        emisor: user.id,
-        type: 'asesor',
-        text: message
-      });
+      if (user) {
+        socket.emit('MESSAGE', {
+          emisor: user.id,
+          type: 'ASESOR',
+          text: message
+        });
+      }
     }
     setMessage('');
   };

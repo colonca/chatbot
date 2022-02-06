@@ -12,6 +12,6 @@
 }
 
 .message.own .message__content {
-  @apply bg-blue-50;
+  @apply bg-red-100;
   border-top-right-radius: 0;
 }
