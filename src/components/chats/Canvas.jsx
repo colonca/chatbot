@@ -100,6 +100,7 @@ function Canvas({ title = 'WayitaBot', children, client = true }) {
               )}
             </div>
           )}
+          {!client && <div>{children}</div>}
         </div>
       )}
       {!open && (
