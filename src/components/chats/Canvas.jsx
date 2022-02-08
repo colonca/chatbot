@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import Message from '../Message';
+import HouseKeeping from '../bot/HouseKeeping';
 
-function Canvas({ title = 'WayitaBot', children }) {
+function Canvas({ title = 'WayitaBot', children, client = true }) {
   const [open, setOpen] = useState(false);
+  const [operacion, setOperacion] = useState('bot');
+
   return (
     <div className="fixed bottom-4 right-4 ">
       {open && (
@@ -41,7 +45,61 @@ function Canvas({ title = 'WayitaBot', children }) {
               </svg>
             </button>
           </div>
-          {children}
+          {client && (
+            <div>
+              {operacion === 'bot' && (
+                <div className="h-96 relative overflow-y-auto py-4">
+                  <div className="mb-4">
+                    <Message
+                      own={false}
+                      content={[
+                        'Hola ¡qué bueno verte por aquí! 👋',
+                        'Dime, ¿cómo puedo ayudarte hoy?'
+                      ]}
+                    />
+                  </div>
+                  <div className="flex flex-col items-end w-10/12 mx-auto">
+                    <button
+                      type="button"
+                      className="w-full border rounded-full p-2 shadow-md mb-2"
+                    >
+                      🏫 Realizar Reserva
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full mx-auto border rounded-full p-2 shadow-md mb-2"
+                    >
+                      🍨 Servicio a la habitación
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOperacion('housekeeping')}
+                      className="w-full mx-auto border rounded-full p-2 shadow-md mb-2"
+                    >
+                      🕴 HouseKeeping
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full mx-auto border rounded-full p-2 shadow-md mb-2"
+                    >
+                      🚕 Transporte
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOperacion('chat')}
+                      className="w-full mx-auto border rounded-full p-2 shadow-md mb-2"
+                    >
+                      🧑‍ Hablor con un Asesor
+                    </button>
+                  </div>
+                </div>
+              )}
+              {operacion === 'chat' && <div>{children}</div>}
+              {operacion === 'housekeeping' && (
+                <HouseKeeping setOperacion={setOperacion} />
+              )}
+            </div>
+          )}
         </div>
       )}
       {!open && (

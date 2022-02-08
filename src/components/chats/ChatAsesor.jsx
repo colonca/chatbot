@@ -38,6 +38,34 @@ function ChatAsesor() {
           setMessages([...messages, { own: false, content: [value.text] }]);
         }
       });
+
+      socket.on('REFRESH', async (value) => {
+        if (value.receptor === user.id) {
+          const resp = await TicketServices.getTicketAsesor(user.id);
+          if (resp.status === 200) {
+            setMessages(
+              resp.result.messages.map((item) => ({
+                own: item.emisor === user.id,
+                content: [item.text]
+              }))
+            );
+          }
+        }
+      });
+
+      socket.on('FINALIZAR CHAT', async (value) => {
+        if (value.receptor === user.id) {
+          const resp = await TicketServices.getTicketAsesor(user.id);
+          if (resp.status === 200) {
+            setMessages(
+              resp.result.messages.map((item) => ({
+                own: item.emisor === user.id,
+                content: [item.text]
+              }))
+            );
+          }
+        }
+      });
     }
   }, [messages, user]);
 

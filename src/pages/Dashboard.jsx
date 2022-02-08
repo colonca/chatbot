@@ -21,7 +21,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <Canvas title="Camilo Colón">
+      <Canvas title="Camilo Colón" client={false}>
         <ChatAsesor />
       </Canvas>
     </div>

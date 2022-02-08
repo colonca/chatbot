@@ -9,6 +9,7 @@ function ChatClient() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [position, setPositon] = useState(0);
+  const [ticket, setTicket] = useState(null);
 
   const { key } = useLocalStorageClient();
 
@@ -17,6 +18,7 @@ function ChatClient() {
       if (key) {
         const resp = await TicketServices.getTicketClient(key);
         if (resp.status === 200) {
+          setTicket(resp.result);
           setMessages(
             resp.result.messages.map((item) => ({
               own: item.emisor === key,
@@ -36,7 +38,6 @@ function ChatClient() {
         area: 'SOPORTE'
       });
       socket.on('MESSAGE', (value) => {
-        console.log(value);
         if (value.receptor === key) {
           setMessages([...messages, { own: false, content: [value.text] }]);
         }
@@ -64,6 +65,14 @@ function ChatClient() {
   return (
     <div>
       <div className="h-96 overflow-y-auto py-4">
+        {ticket && (
+          <div className="flex flex-col items-center justify-center mb-2 text-sm w-full">
+            <p className="">
+              <span className="font-semibold">🙆 Asesor/a</span> :{' '}
+              {ticket.asesor ? ticket.asesor.name : 'SIN ASIGNAR'}
+            </p>
+          </div>
+        )}
         {position !== 0 && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center my-2 text-sm w-full">
             <p className="w-4/5 text-center">
