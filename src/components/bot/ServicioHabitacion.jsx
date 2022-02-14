@@ -4,26 +4,38 @@ import uuid from '../../utils/uuid';
 import OrderServices from '../../services/OrderServices';
 
 const opciones = {
-  1: 'Toallas',
-  2: 'Almohadas',
-  3: 'Planchas',
-  4: 'Cobijas',
-  5: 'Solicitud de Mantenimiento',
-  6: 'Mesas y Sillas',
-  7: 'Kit Dental',
-  8: 'Kit de Afeitar'
+  1: 'Salomon a la brasa $44.000',
+  2: 'Baby Beef $42.000',
+  3: 'Pollo al estilo Waya $34.000',
+  4: 'Hamburguesa Tradicional - $27.000',
+  5: 'Sándwich de Carne - $21.000',
+  6: 'Wrap de Pollo - $25.000',
+  7: 'Dulces Tipicos- $10.000',
+  8: 'Cheesecake con salsa de agras - $10.000',
+  9: 'Cerveza importada - $9.000',
+  10: 'Cerveza nacional - $16.000',
+  11: 'Gaseosa 400 ml - $8.000',
+  12: 'Gaseosa 600 ml - $9.000',
+  13: 'Hablar con un asesor',
+  14: 'Volver'
 };
 
-function HouseKeeping({ setOperacion }) {
+const metodosPago = {
+  1: 'Pago en Efectivo',
+  2: 'Pago con Tarjeta',
+  3: 'Cargo a la Habitación'
+};
+
+function ServicioHabitacion({ setOperacion }) {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   function handleSubmit() {
     if (message !== '') {
-      if (message === '9' && messages.length === 0) setOperacion('bot');
+      if (message === '14' && messages.length === 0) setOperacion('bot');
       let response = '';
       if (messages.length === 0) {
-        if (parseInt(message, 10) < 0 || parseInt(message, 10) > 9) {
+        if (parseInt(message, 10) < 0 || parseInt(message, 10) > 14) {
           setError('Opción Invalida');
           setTimeout(() => {
             setError(null);
@@ -41,21 +53,36 @@ function HouseKeeping({ setOperacion }) {
         response = {
           own: false,
           content: [
+            'Metodo de pago',
+            '1. Pago en Efectivo',
+            '2. Pago con Tarjeta',
+            '3. Cargo a la Habitación'
+          ]
+        };
+      }
+      if (messages.length === 6) {
+        if (parseInt(message, 10) < 0 || parseInt(message, 10) > 0) {
+          setError('Opcion Invalida');
+        }
+        response = {
+          own: false,
+          content: [
             'Gracios por comunicarte con nosotros, pronto estará el servicio en camino.',
             '1. Volver'
           ]
         };
         OrderServices.save({
-          tipo: 'housekeeping',
+          tipo: 'Servicio a la Habitación',
           content: {
             servicio:
               opciones[messages[0].content[0]] || messages[0].content[0],
-            nombre: message,
-            habitacion: messages[2].content[0]
+            nombre: messages[4].content[0],
+            habitacion: messages[2].content[0],
+            metodo_de_pago: metodosPago[message] || message
           }
         });
       }
-      if (messages.length === 6 && message === '1') setOperacion('bot');
+      if (messages.length === 8) setOperacion('bot');
       setMessages([...messages, { own: true, content: [message] }, response]);
     }
     setMessage('');
@@ -66,16 +93,20 @@ function HouseKeeping({ setOperacion }) {
         <Message
           own={false}
           content={[
-            'Estas son las opciones que tenemos dispnibles para ti 😎',
-            '1. Toallas 🛀',
-            '2. Almohadas ☁',
-            '3. Planchas 👔',
-            '4. Cobijas 🥶',
-            '5. Solicitud de mantenimiento 🛠',
-            '6. Mesas y Sillas 🪑',
-            '7. Kit Dental 🦷',
-            '8. Kit Afeitar 🪒',
-            '9. volver ↩'
+            'Lista de comidas y bebidas disponbles',
+            '1. Salomon a la brasa $44.000',
+            '2. Baby Beef $42.000',
+            '3. Pollo al estilo Waya $34.000',
+            '4. Hamburguesa Tradicional - $27.000',
+            '5. Sándwich de Carne - $21.000',
+            '6. Wrap de Pollo - $25.000',
+            '7. Dulces Tipicos- $10.000',
+            '8. Cheesecake con salsa de agras - $10.000',
+            '9. Cerveza importada - $9.000',
+            '10. Cerveza nacional - $16.000',
+            '11. Gaseosa 400 ml - $8.000',
+            '12. Gaseosa 600 ml - $9.000',
+            '14. volver'
           ]}
         />
         {error && <Message own={false} content={[error]} />}
@@ -120,4 +151,4 @@ function HouseKeeping({ setOperacion }) {
   );
 }
 
-export default HouseKeeping;
+export default ServicioHabitacion;

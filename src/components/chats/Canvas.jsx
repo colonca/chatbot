@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Message from '../Message';
 import HouseKeeping from '../bot/HouseKeeping';
+import ServicioHabitacion from '../bot/ServicioHabitacion';
+import Reserva from '../bot/Reserva';
 
 function Canvas({ title = 'WayitaBot', children, client = true }) {
   const [open, setOpen] = useState(false);
@@ -61,12 +63,14 @@ function Canvas({ title = 'WayitaBot', children, client = true }) {
                   <div className="flex flex-col items-end w-10/12 mx-auto">
                     <button
                       type="button"
+                      onClick={() => setOperacion('reserva')}
                       className="w-full border rounded-full p-2 shadow-md mb-2"
                     >
                       🏫 Realizar Reserva
                     </button>
                     <button
                       type="button"
+                      onClick={() => setOperacion('servicio a la habitacion')}
                       className="w-full mx-auto border rounded-full p-2 shadow-md mb-2"
                     >
                       🍨 Servicio a la habitación
@@ -95,6 +99,12 @@ function Canvas({ title = 'WayitaBot', children, client = true }) {
                 </div>
               )}
               {operacion === 'chat' && <div>{children}</div>}
+              {operacion === 'reserva' && (
+                <Reserva setOperacion={setOperacion} />
+              )}
+              {operacion === 'servicio a la habitacion' && (
+                <ServicioHabitacion setOperacion={setOperacion} />
+              )}
               {operacion === 'housekeeping' && (
                 <HouseKeeping setOperacion={setOperacion} />
               )}

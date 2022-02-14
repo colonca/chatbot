@@ -1,5 +1,5 @@
 import React from 'react';
-import '../assets/table.css';
+import '../assets/css/table.css';
 import uuid from '../utils/uuid';
 
 function Table({ columns, children }) {

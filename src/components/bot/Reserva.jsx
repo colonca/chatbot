@@ -4,61 +4,48 @@ import uuid from '../../utils/uuid';
 import OrderServices from '../../services/OrderServices';
 
 const opciones = {
-  1: 'Toallas',
-  2: 'Almohadas',
-  3: 'Planchas',
-  4: 'Cobijas',
-  5: 'Solicitud de Mantenimiento',
-  6: 'Mesas y Sillas',
-  7: 'Kit Dental',
-  8: 'Kit de Afeitar'
+  1: 'Reservar habitación',
+  2: 'Reservar jacuzzi',
+  3: 'Reservar GYM',
+  4: 'Reservar Sendero',
+  5: 'Volver'
 };
 
-function HouseKeeping({ setOperacion }) {
+function Reserva({ setOperacion }) {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   function handleSubmit() {
     if (message !== '') {
-      if (message === '9' && messages.length === 0) setOperacion('bot');
       let response = '';
-      if (messages.length === 0) {
-        if (parseInt(message, 10) < 0 || parseInt(message, 10) > 9) {
-          setError('Opción Invalida');
-          setTimeout(() => {
-            setError(null);
-          }, 3000);
-          return;
+      if (message === '5' && messages.length === 0) setOperacion('bot');
+      if (
+        messages.length === 0 &&
+        (parseInt(message, 10) < 0 || parseInt(message, 10) > 5)
+      ) {
+        setError('Opción Invalida.');
+        setTimeout(() => {
+          setError(null);
+        }, 2000);
+        return;
+      }
+      if (messages.length === 0 && message === '1') {
+        response = { own: false, content: ['¿Cual es su nombre?'] };
+      }
+      if (messages[0].content[0] === '1') {
+        if (messages.length === 2) {
+          response = { own: false, content: ['¿Numero de Identificación?'] };
         }
-        response = {
-          own: false,
-          content: ['Cual es el Numero de la Habitacón ?']
-        };
+        if (messages.length === 4) {
+          response = {
+            own: false,
+            content: ['¿Por Favor ingrese su Correo Electronico?']
+          };
+        }
       }
-      if (messages.length === 2)
-        response = { own: false, content: ['Cual es su nombre ?'] };
-      if (messages.length === 4) {
-        response = {
-          own: false,
-          content: [
-            'Gracios por comunicarte con nosotros, pronto estará el servicio en camino.',
-            '1. Volver'
-          ]
-        };
-        OrderServices.save({
-          tipo: 'housekeeping',
-          content: {
-            servicio:
-              opciones[messages[0].content[0]] || messages[0].content[0],
-            nombre: message,
-            habitacion: messages[2].content[0]
-          }
-        });
-      }
-      if (messages.length === 6 && message === '1') setOperacion('bot');
       setMessages([...messages, { own: true, content: [message] }, response]);
+      setMessage('');
     }
-    setMessage('');
   }
   return (
     <div>
@@ -66,16 +53,12 @@ function HouseKeeping({ setOperacion }) {
         <Message
           own={false}
           content={[
-            'Estas son las opciones que tenemos dispnibles para ti 😎',
-            '1. Toallas 🛀',
-            '2. Almohadas ☁',
-            '3. Planchas 👔',
-            '4. Cobijas 🥶',
-            '5. Solicitud de mantenimiento 🛠',
-            '6. Mesas y Sillas 🪑',
-            '7. Kit Dental 🦷',
-            '8. Kit Afeitar 🪒',
-            '9. volver ↩'
+            'Que tipo de reserva quieres realizar ?',
+            '1. Reservar Habitación',
+            '2. Reservar Jacuzzi',
+            '3. Reservar GYM',
+            '4. Reservar Sendero',
+            '5. volver ↩'
           ]}
         />
         {error && <Message own={false} content={[error]} />}
@@ -120,4 +103,4 @@ function HouseKeeping({ setOperacion }) {
   );
 }
 
-export default HouseKeeping;
+export default Reserva;

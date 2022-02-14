@@ -1,5 +1,6 @@
 import React from 'react';
 import './assets/css/index.css';
+import './assets/css/buttons.css';
 import {
   BrowserRouter as Router,
   Routes,
