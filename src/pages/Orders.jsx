@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { object } from 'prop-types';
 import BreadCrumbs from '../components/ BreadCrumbs';
 import ButtonEdit from '../components/ButtonEdit';
 import ButtonDelete from '../components/ButtonDelete';
@@ -27,6 +28,7 @@ function Orders() {
       'Habitación',
       'Servicio',
       'Tipo de Pago',
+      'Descripción',
       'Estado',
       'Acciones'
     ],
@@ -86,11 +88,24 @@ function Orders() {
             <tr key={uuid()}>
               <td>{item.tipo}</td>
               <td>{item.content.nombre}</td>
-              <td>{item.content.habitacion}</td>
+              <td>{item.content.habitacion || 'N/A'}</td>
               <td>{item.content.servicio}</td>
               <td>{item.content.metodo_de_pago || 'N/A'}</td>
+              <td>
+                <ul>
+                  {Object.keys(item.content).map((key) => {
+                    if (key === 'servicio' || key === 'nombre') return null;
+                    return (
+                      <li>
+                        <span className="font-semibold">{`${key}: `}</span>
+                        {item.content[key]}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </td>
               <td>{item.estado}</td>
-              <td className="flex items-center  justify-between">
+              <td className="">
                 <ButtonEdit
                   onClick={() =>
                     setDeleteModal({

@@ -2,7 +2,7 @@ import React from 'react';
 
 function ButtonEdit({ onClick }) {
   return (
-    <button type="button" className="text-green-500" onClick={onClick}>
+    <button type="button" className="text-green-500 mx-4" onClick={onClick}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-6 w-6"

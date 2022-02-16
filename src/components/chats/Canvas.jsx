@@ -3,6 +3,7 @@ import Message from '../Message';
 import HouseKeeping from '../bot/HouseKeeping';
 import ServicioHabitacion from '../bot/ServicioHabitacion';
 import Reserva from '../bot/Reserva';
+import Transporte from '../bot/Transporte';
 
 function Canvas({ title = 'WayitaBot', children, client = true }) {
   const [open, setOpen] = useState(false);
@@ -84,6 +85,7 @@ function Canvas({ title = 'WayitaBot', children, client = true }) {
                     </button>
                     <button
                       type="button"
+                      onClick={() => setOperacion('transporte')}
                       className="w-full mx-auto border rounded-full p-2 shadow-md mb-2"
                     >
                       🚕 Transporte
@@ -107,6 +109,9 @@ function Canvas({ title = 'WayitaBot', children, client = true }) {
               )}
               {operacion === 'housekeeping' && (
                 <HouseKeeping setOperacion={setOperacion} />
+              )}
+              {operacion === 'transporte' && (
+                <Transporte setOperacion={setOperacion} />
               )}
             </div>
           )}
